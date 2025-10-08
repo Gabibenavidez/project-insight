@@ -30,7 +30,7 @@ function App() {
           <Tabs value={tab} onChange={(e, newValue) => setTab(newValue)} centered textColor="primary">
             <Tab label="Dashboard" />
             <Tab label="Products" />
-            <Tab label="Azure Sentiment Analysis" />
+            <Tab label="Azure Text Analysis" />
           </Tabs>
         </Box>
 

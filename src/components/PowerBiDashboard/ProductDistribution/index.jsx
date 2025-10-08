@@ -35,7 +35,8 @@ const topProducts = data.sort((a, b) => b.quantity
         <Tooltip />
         <Legend />
       </PieChart>
-    </ResponsiveContainer></>
+    </ResponsiveContainer>
+    </>
   );
 };
 
