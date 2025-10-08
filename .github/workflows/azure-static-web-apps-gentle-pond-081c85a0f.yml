@@ -10,37 +10,41 @@ on:
       - main
 
 jobs:
-  build_and_deploy:
+  build-and-deploy:
     runs-on: ubuntu-latest
     name: Build and Deploy Job
     steps:
-      # 1️⃣ Checkout del código
-      - name: Checkout repository
+      # Checkout del repositorio
+      - name: Checkout GitHub Action
         uses: actions/checkout@v3
 
-      # 2️⃣ Configurar Node 22
+      # Configurar Node 22
       - name: Setup Node.js
         uses: actions/setup-node@v3
         with:
-          node-version: '22.17.0'
+          node-version: '22'
+          cache: 'npm'
 
-      # 3️⃣ Instalar dependencias
-      - name: Install dependencies
-        run: npm ci
-        working-directory: ./frontend   # <-- ajustá si tu frontend está en otra carpeta
+      # Limpiar y reinstalar dependencias
+      - name: Clean and Install Dependencies
+        run: |
+          npm cache clean --force
+          rm -rf node_modules package-lock.json
+          npm install -g npm@latest
+          npm install
+        working-directory: ./frontend
 
-      # 4️⃣ Build del proyecto
-      - name: Build project
+      # Construir la app
+      - name: Build App
         run: npm run build
         working-directory: ./frontend
 
-      # 5️⃣ Deploy a Azure Static Web App
+      # Desplegar a Azure Static Web Apps
       - name: Deploy to Azure Static Web Apps
         uses: Azure/static-web-apps-deploy@v1
         with:
           azure_static_web_apps_api_token: ${{ secrets.AZURE_STATIC_WEB_APPS_API_TOKEN }}
           repo_token: ${{ secrets.GITHUB_TOKEN }}
           action: "upload"
-          app_location: "frontend"      # ruta de tu app
-          api_location: ""              # si tenés Azure Functions, pon la ruta; sino ""
-          output_location: "dist"       # carpeta generada por Vite
+          app_location: "frontend"
+          output_location: "frontend/dist"
