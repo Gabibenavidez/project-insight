@@ -1,3 +1,4 @@
+# .github/workflows/deploy.yml
 name: Azure Static Web Apps CI/CD
 
 on:
@@ -17,18 +18,17 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v3
         with:
-          node-version: '20'
+          node-version: '20.x'
           cache: 'npm'
           cache-dependency-path: frontend/
 
       - name: Install dependencies
+        working-directory: ./frontend   # <-- carpeta de tu package-lock.json
         run: npm ci
-        working-directory: ./frontend
 
       # Build
       - name: Build App
         run: npm run build
-        working-directory: ./frontend
 
       # Deploy
       - name: Deploy to Azure Static Web Apps
@@ -37,6 +37,6 @@ jobs:
           azure_static_web_apps_api_token: ${{ secrets.AZURE_STATIC_WEB_APPS_API_TOKEN }}
           repo_token: ${{ secrets.GITHUB_TOKEN }}
           action: "upload"
-          app_location: "frontend"  
-          output_location: "frontend/dist"  
-          skip_app_build: true
+          app_location: "frontend"          # <-- donde está tu código fuente
+          output_location: "frontend/dist"  # <-- donde se genera el build
+          api_location: ""                  # <-- si no tenés API en Azure Functions
