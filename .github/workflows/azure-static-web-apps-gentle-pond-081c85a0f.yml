@@ -1,43 +1,45 @@
-# .github/workflows/deploy.yml
 name: Azure Static Web Apps CI/CD
 
 on:
   push:
     branches:
-      - main  # Cambiá por tu rama de producción
+      - main
   pull_request:
     types: [opened, synchronize, reopened, closed]
     branches:
       - main
 
 jobs:
-  build_and_deploy:
+  build-and-deploy:
     runs-on: ubuntu-latest
-
+    name: Build and Deploy Job
     steps:
-      - name: Checkout repo
-        uses: actions/checkout@v3
+      # 1. Checkout repository
+      - uses: actions/checkout@v3
 
+      # 2. Setup Node.js
       - name: Setup Node.js
         uses: actions/setup-node@v3
         with:
           node-version: '20.x'
           cache: 'npm'
 
+      # 3. Install dependencies
       - name: Install dependencies
-        working-directory: ./frontend   # <-- carpeta de tu package-lock.json
-        run: npm ci
+        working-directory: ./frontend   # <-- carpeta donde está tu package-lock.json
+        run: npm ci --include=dev
 
+      # 4. Build frontend
       - name: Build frontend
         working-directory: ./frontend
         run: npx vite build
 
+      # 5. Deploy to Azure Static Web Apps
       - name: Deploy to Azure Static Web Apps
         uses: Azure/static-web-apps-deploy@v1
         with:
           azure_static_web_apps_api_token: ${{ secrets.AZURE_STATIC_WEB_APPS_API_TOKEN }}
-          repo_token: ${{ secrets.GITHUB_TOKEN }}
+          repo_token: ${{ secrets.GITHUB_TOKEN }} # usado por GitHub Actions
           action: "upload"
-          app_location: "frontend"          # <-- donde está tu código fuente
-          output_location: "frontend/dist"  # <-- donde se genera el build
-          api_location: ""                  # <-- si no tenés API en Azure Functions
+          app_location: "frontend"          # tu carpeta de frontend
+          output_location: "frontend/dist"  # donde genera Vite los archivos estáticos
